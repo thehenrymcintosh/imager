@@ -30,6 +30,22 @@ impl OptJob {
         let source = std::fs::read(path).expect("input file path");
         OptJob::new(&source)
     }
+    pub fn new_from_dynamic_image( source:DynamicImage, source_format: Option<ImageFormat>) -> Result<Self, ()> {
+      let source = crate::data::ensure_even_reslution(&source);
+      let source_format = source_format.unwrap_or(ImageFormat::JPEG);
+      let output_format = match source_format {
+        ImageFormat::JPEG => OutputFormat::Jpeg,
+        ImageFormat::PNG => OutputFormat::Png,
+        ImageFormat::WEBP => OutputFormat::Webp,
+        _ => OutputFormat::Jpeg
+    };
+      Ok(OptJob {
+          output_format,
+          source,
+          source_format,
+          max_size: None,
+      })
+    }
     pub fn new(source: &[u8]) -> Result<Self, ()> {
         let source_format = ::image::guess_format(source).map_err(drop)?;
         let output_format = match source_format {
@@ -121,6 +137,18 @@ impl OptJob {
 #[cfg(test)]
 mod test {
     use super::*;
+
+    #[test]
+    fn test_opt_basic() {
+        let test_image = include_bytes!("../assets/test/1.jpeg");
+        for output_format in vec![OutputFormat::Jpeg, OutputFormat::Png, OutputFormat::Webp] {
+            let mut opt_job = OptJob::new(test_image).expect("new opt job");
+            opt_job.output_format(output_format);
+            opt_job.max_size(Resolution::new(1000, 1000));
+            let result = opt_job.run(false);
+            assert!(result.is_ok());
+        }
+    }
 
     #[test]
     fn test_opt_basic() {
