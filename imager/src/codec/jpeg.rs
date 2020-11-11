@@ -11,7 +11,7 @@ use image::{
     GenericImage,
     DynamicImage,
     GenericImageView,
-    FilterType,
+    imageops::FilterType,
     ColorType,
     Pixel,
 };

@@ -10,7 +10,7 @@ use image::{
     GenericImage,
     GenericImageView,
     DynamicImage,
-    FilterType,
+    imageops::FilterType,
     Pixel,
     ColorType,
     ImageBuffer,
@@ -19,7 +19,7 @@ use image::{
     RgbImage,
     Luma,
     Rgb,
-    ConvertBuffer,
+    buffer::ConvertBuffer
 };
 use imageproc::corners::Fast;
 use imageproc::definitions::HasBlack;
